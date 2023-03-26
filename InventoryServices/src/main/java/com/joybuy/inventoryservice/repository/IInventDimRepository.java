@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface IInventDimRepository extends JpaRepository<InventDim, Long>
 {
-    List<InventDim> findByProductId(String ProductId);
+    List<InventDim> findByProductIdAndInventColorIdAndInventSizeId(String ProductId, String inventColorId, String inventSizeId);
 }

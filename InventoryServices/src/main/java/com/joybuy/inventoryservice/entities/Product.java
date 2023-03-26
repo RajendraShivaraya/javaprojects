@@ -1,19 +1,22 @@
 package com.joybuy.inventoryservice.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 
-@Data @Entity
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor
+@FieldNameConstants
+@ToString
 @Table(name = "products")
 public class Product
 {
     @Id
-    @Column(name="productid")
-    private String productId;
+    @Column(name="id")
+    private String id;
     @Column(name="productname")
     private String productName;
     @Column(name="productdescription", columnDefinition = "varchar(1000)")
@@ -26,4 +29,10 @@ public class Product
     private String productLink;
     @Column(name="brand")
     private String brand;
+
+    @OneToMany(mappedBy="product", fetch= FetchType.LAZY,cascade = CascadeType.PERSIST)
+    private List<SalesPrice> salesPrices = new ArrayList<>();
+
+    @OneToMany(mappedBy="product", fetch= FetchType.LAZY,cascade = CascadeType.PERSIST)
+    public List<InventDim> inventDims = new ArrayList<>();
 }

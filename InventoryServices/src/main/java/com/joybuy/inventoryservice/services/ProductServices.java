@@ -1,19 +1,19 @@
 package com.joybuy.inventoryservice.services;
 
+import com.joybuy.inventoryservice.DTO.PriceDimensionDTO;
+import com.joybuy.inventoryservice.DTO.ProductPriceDimensionsDTO;
 import com.joybuy.inventoryservice.entities.*;
 import com.joybuy.inventoryservice.repository.IInventDimRepository;
 import com.joybuy.inventoryservice.repository.IProductRepository;
 import com.joybuy.inventoryservice.repository.ISalesPriceRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.*;
 
 @Service
@@ -38,113 +38,44 @@ public class ProductServices
         return productRepository.findAll();
     }
 
-    public InventoryServices getItem(String productId)
-    {
-        List<Product> prod = Arrays.asList(productRepository.findById(productId).get());
-        List<InventDim> invDim = inventDimRepository.findByProductId(productId);
-        List<SalesPrice> salesPrice = Arrays.asList(salesPriceRepository.findById(productId).get());
-        return new InventoryServices(
-                prod,
-                salesPrice,
-                invDim
-                );
-    }
 
-    public InventoryServices getItems()
-    {
-        List<Product> prod = productRepository.findAll();
-        List<InventDim> invDim = inventDimRepository.findAll();
-        List<SalesPrice> salesPrice = salesPriceRepository.findAll();
-        return new InventoryServices(
-                prod,
-                salesPrice,
-                invDim
-        );
-    }
-
-    public void insertBulkProducts()
+    public ResponseEntity<String> createProduct(ProductPriceDimensionsDTO productPriceDimensionsDTO)
     {
         try
         {
-            File file = new File("C:\\Products.xlsx");   //creating a new file instance
-            FileInputStream fis = new FileInputStream(file);   //obtaining bytes from the file
-            //creating Workbook instance that refers to .xlsx file
-            XSSFWorkbook wb = new XSSFWorkbook(fis);
-            XSSFSheet sheet = wb.getSheetAt(0);     //creating a Sheet object to retrieve object
-            Iterator<Row> itr = sheet.iterator();    //iterating over excel file
-            while (itr.hasNext())
-            {
-                Row row = itr.next();
-                Product prodObj = new Product();
-                prodObj.setProductId(row.getCell(0).getStringCellValue());
-                prodObj.setProductName(row.getCell(1).getStringCellValue());
-                String text = row.getCell(2).getStringCellValue();
-                prodObj.setProductDescription(text.length() <= 999 ? text : text.substring(0, 999));
-                prodObj.setProductCategory(row.getCell(3).getStringCellValue());
-                //prodObj.setProductImage(row.getCell(4).getStringCellValue());
-                String text1 = row.getCell(5).getStringCellValue();
-                prodObj.setProductLink(text1.length() <= 999 ? text1 : text1.substring(0, 999));
-                prodObj.setBrand(row.getCell(6).getStringCellValue());
-                productRepository.save(prodObj);
-            }
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
+            Product createProduct = new Product();
+            createProduct.setId(productPriceDimensionsDTO.getProductId());
+            createProduct.setProductLink(productPriceDimensionsDTO.getProductLink());
+            createProduct.setProductImage(productPriceDimensionsDTO.getProductImage());
+            createProduct.setProductCategory(productPriceDimensionsDTO.getProductCategory());
+            createProduct.setProductDescription(productPriceDimensionsDTO.getProductDescription());
+            createProduct.setProductName(productPriceDimensionsDTO.getProductName());
+            createProduct.setBrand(productPriceDimensionsDTO.getBrand());
+            productRepository.save(createProduct);
 
-    public void insertBulkSalesPrice()
-    {
-        try
-        {
-            File file = new File("C:\\SalesPrice.xlsx");   //creating a new file instance
-            FileInputStream fis = new FileInputStream(file);   //obtaining bytes from the file
-            //creating Workbook instance that refers to .xlsx file
-            XSSFWorkbook wb = new XSSFWorkbook(fis);
-            XSSFSheet sheet = wb.getSheetAt(0);     //creating a Sheet object to retrieve object
-            Iterator<Row> itr = sheet.iterator();    //iterating over excel file
-            while (itr.hasNext())
+            for (PriceDimensionDTO priceDimensionDTO : productPriceDimensionsDTO.getPriceDimensionDTO())
             {
-                Row row = itr.next();
-                SalesPrice salesPriceObj = new SalesPrice();
-                salesPriceObj.setProductId(row.getCell(0).getStringCellValue());
-                salesPriceObj.setSalesPrice((float) row.getCell(1).getNumericCellValue());
-                salesPriceObj.setInvPrice((float) row.getCell(2).getNumericCellValue());
-                salesPriceObj.setCurrency(row.getCell(3).getStringCellValue());
-                salesPriceRepository.save(salesPriceObj);
-            }
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
 
-    }
-    public void insertBulkInventDim()
-    {
-        try
-        {
-            File file = new File("C:\\InventDim.xlsx");   //creating a new file instance
-            FileInputStream fis = new FileInputStream(file);   //obtaining bytes from the file
-            //creating Workbook instance that refers to .xlsx file
-            XSSFWorkbook wb = new XSSFWorkbook(fis);
-            XSSFSheet sheet = wb.getSheetAt(0);     //creating a Sheet object to retrieve object
-            Iterator<Row> itr = sheet.iterator();    //iterating over excel file
-            while (itr.hasNext())
-            {
-                Row row = itr.next();
-                InventDim dimObj = new InventDim();
-                dimObj.setProductId(row.getCell(0).getStringCellValue());
-                dimObj.setInventColorId(row.getCell(1).getStringCellValue());
-                dimObj.setAvailableQty((float)row.getCell(2).getNumericCellValue());
-                dimObj.setInventLocationId(row.getCell(3).getStringCellValue());
-                inventDimRepository.save(dimObj);
+                InventDim inventDim = new InventDim();
+                inventDim.setInventColorId(priceDimensionDTO.getInventDim().getInventColorId());
+                inventDim.setInventSizeId(priceDimensionDTO.getInventDim().getInventSizeId());
+                inventDim.setProduct(createProduct);
+                Long dimId = inventDimRepository.save(inventDim).getDimId();
+
+                SalesPrice price = new SalesPrice();
+
+                price.setSalesPrice(priceDimensionDTO.getSalesPrice());
+                price.setCurrency(priceDimensionDTO.getCurrency());
+                price.setInventDim(inventDimRepository.findById(dimId).get());
+                price.setProduct(createProduct);
+
+                salesPriceRepository.save(price);
             }
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         }
-        catch(Exception e)
+        catch (Exception er)
         {
-            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er.getMessage());
         }
     }
 }

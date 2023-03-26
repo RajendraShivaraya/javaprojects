@@ -1,24 +1,21 @@
-package com.joybuy.inventoryservice.entities;
+package com.joybuy.salesservice.entities;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.FieldNameConstants;
 
 @Entity
-@Getter @Setter @AllArgsConstructor @NoArgsConstructor @ToString
-@FieldNameConstants
+@Data
 @Table(name = "inventdim")
 public class InventDim
 {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="dimid")
-    private Long dimId;
-
+    @Column(name="inventdimid")
+    private Long inventDimId;
+    @Column(name="productid")
+    private String productId;
     @Column(name="configid")
     private String configId;
-    @Column(name="inventsizeid")
+    @Column(name="inventSizeId")
     private String inventSizeId;
     @Column(name="inventcolorid")
     private String inventColorId;
@@ -38,8 +35,4 @@ public class InventDim
     private String inventSerialId;
     @Column(name="avilableqty")
     private float availableQty;
-
-    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Product.class)
-    @JoinColumn(name="productid", referencedColumnName = "id", nullable = false)
-    private Product product;
 }

@@ -1,14 +1,14 @@
 package com.joybuy.inventoryservice.controller;
 
+import com.joybuy.inventoryservice.DTO.ProductPriceDimensionsDTO;
 import com.joybuy.inventoryservice.entities.*;
 import com.joybuy.inventoryservice.services.ProductServices;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -35,7 +35,19 @@ public class ProductController
         }
     }
 
-    @GetMapping("/product/{id}")
+    @GetMapping("/")
+    public String rootPath()
+    {
+        return "<h1> Welcome to inventory services</h1>" +
+                "<ul>\n" +
+                "  <li>JSON Payload of entities : http://localhost:8090/jsonpayload/{entity} </li>\n" +
+                "  <li>Get product by id : /products/{id} </li>\n" +
+                "  <li>Get all products : /products </li>\n" +
+                "  <li>Create new product by entity : /newProduct </li>\n" +
+                "  <li>Create product by service : /inventoryservice/create/product </li>\n" +
+                "</ul>";
+    }
+    @GetMapping("/products/{id}")
     public Product getProducts(@PathVariable String id)
     {
         return productService.productRepository.findById(id).get();
@@ -53,24 +65,10 @@ public class ProductController
         return productService.productRepository.save(product);
     }
 
-    @GetMapping("/item/{productId}")
-    public InventoryServices getItem(@PathVariable String productId)
+    @PostMapping("/inventoryservice/create/product")
+    public ResponseEntity<String> createProduct(@RequestBody ProductPriceDimensionsDTO product)
     {
-        return productService.getItem(productId);
-    }
-    @GetMapping("/items")
-    public InventoryServices getItems()
-    {
-        return productService.getItems();
+        return productService.createProduct(product);
     }
 
-    @GetMapping("/readItems")
-    public String insertBulkProducts()
-    {
-        productService.insertBulkProducts();
-        productService.insertBulkSalesPrice();
-        productService.insertBulkInventDim();
-
-        return "Data Import Complete";
-    }
 }
