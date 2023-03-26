@@ -15,7 +15,7 @@ public class salesController
     public SalesOrderService salesOrderService;
 
     @PostMapping("/salesservice/createsalesorder")
-    public String createSalesOrder(@RequestBody SalesOrderRequestDTO salesOrderDTO) //SalesOrderResponseDTO
+    public SalesOrderResponseDTO createSalesOrder(@RequestBody SalesOrderRequestDTO salesOrderDTO)
     {
         return salesOrderService.createSalesOrder(salesOrderDTO);
     }

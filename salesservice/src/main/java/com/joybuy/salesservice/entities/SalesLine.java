@@ -28,14 +28,17 @@ public class SalesLine
     public int    lineNum;
     @Column(name = "itemid")
     public String itemId;
-    @Column(name = "itemprice")
-    public float itemPrice;
     @Column(name = "qty")
     public int     qty;
-    @Column(name = "linedisc")
-    public float    lineDisc;
+
     @Column(name = "salesprice")
     public float    salesPrice;
+    @Column(name = "lineamount")
+    public float    lineAmount;
+    @Column(name = "linedisc")
+    public float    lineDisc;
+    @Column(name = "totalprice")
+    public float    totalPrice;
 
     @Nonnull
     @Column(name = "inventdimid")

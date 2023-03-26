@@ -22,8 +22,7 @@ public class SalesTable
     public String SalesId;
     @Column(name = "custid")
     public String custId;
-    @Column(name = "salesamount")
-    public float  salesAmount;
+
     @Column(name = "salestax")
     public float  salesTax;
     @Column(name = "dlvaddress")
@@ -34,6 +33,16 @@ public class SalesTable
     public String receiptId;
     @Column(name = "salestype")
     public Enums.SalesType salesType;
+    @Column(name = "status")
+    public Enums.SalesStatus status;
+    @Column(name = "salesamount")
+    public float  salesAmount;
+    @Column(name = "salesdiscount")
+    public float  salesDiscount;
+    @Column(name = "totalprice")
+    public float  totalPrice;
+    @Column(name = "amountpaid")
+    public float amountPaid;
 
     @OneToMany(mappedBy="salesTable", fetch= FetchType.LAZY, cascade = CascadeType.ALL,  orphanRemoval = true)
     public List<SalesLine> salesLines = new ArrayList<>();;

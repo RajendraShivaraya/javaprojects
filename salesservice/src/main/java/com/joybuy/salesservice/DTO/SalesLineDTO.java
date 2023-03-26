@@ -10,10 +10,11 @@ import lombok.experimental.FieldNameConstants;
 @FieldNameConstants
 public class SalesLineDTO
 {
-    private int lineNum;
+    private int    lineNum;
     private String itemId;
-    private float  itemPrice;
     private int    qty;
-    private float  lineDisc;
-    private float  salesPrice;
+    public float   salesPrice;
+    public float   lineAmount;
+    public float   lineDisc;
+    public float   totalPrice;
 }

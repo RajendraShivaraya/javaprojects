@@ -1,5 +1,7 @@
 package com.joybuy.salesservice.DTO;
 
+import com.joybuy.salesservice.entities.Enums;
+import jakarta.persistence.Column;
 import lombok.Data;
 import lombok.experimental.FieldNameConstants;
 
@@ -12,11 +14,16 @@ public class SalesOrderResponseDTO
 {
     private String SalesId;
     private String custId;
-    private float  salesAmount;
-    private float  salesTax;
     private String dlvAddress;
     private Date   transDate;
     private String receiptId;
+    public Enums.SalesType salesType;
+    public Enums.SalesStatus status;
+    public float  salesAmount;
+    public float  salesDiscount;
+    public float  totalPrice;
+    private float  salesTax;
+    public float   amountPaid;
     private List<SalesLineDTO> salesLines;
 
 }
