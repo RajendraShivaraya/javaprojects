@@ -1,9 +1,6 @@
 package com.joybuy.salesservice.service;
 
-import com.joybuy.salesservice.DTO.ItemsDTO;
-import com.joybuy.salesservice.DTO.SalesLineDTO;
-import com.joybuy.salesservice.DTO.SalesOrderRequestDTO;
-import com.joybuy.salesservice.DTO.SalesOrderResponseDTO;
+import com.joybuy.salesservice.DTO.*;
 import com.joybuy.salesservice.entities.Enums;
 import com.joybuy.salesservice.entities.SalesLine;
 import com.joybuy.salesservice.entities.SalesTable;
@@ -13,10 +10,13 @@ import jakarta.transaction.Transactional;
 import org.apache.coyote.Response;
 import org.hibernate.type.descriptor.DateTimeUtils;
 import org.json.JSONObject;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -34,7 +34,8 @@ public class SalesOrderService
 
     @Autowired
     RestTemplate restTemplate;
-
+    @Autowired
+    private ModelMapper modelMapper;
 
     public SalesOrderResponseDTO createSalesOrder(SalesOrderRequestDTO salesOrderRequestDTO)
     {
@@ -80,7 +81,72 @@ public class SalesOrderService
 
         return convertSalesTableEntityToResponseDTO(salesTableRepository.findById(salesTable.getSalesId()).get());
     }
+    private JSONObject getItemDetails(String itemId, String colorId, String sizeId)
+    {
+        String resourceUrl = "http://localhost:8080/inventoryservices/getitemdetails";
 
+
+        restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> requestBody = new HashMap<String, Object>(3);
+        requestBody.put("itemId", itemId);
+        requestBody.put("colorId", colorId);
+        requestBody.put("sizeId", sizeId);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<Map<String, Object>>(requestBody, headers);
+
+
+        String itemPriceResultAsJson = restTemplate.postForObject(resourceUrl, request, String.class);
+
+        JSONObject jsonObj = new JSONObject(itemPriceResultAsJson);
+        return jsonObj;
+    }
+    public CustomMessageDTO invoiceSalesOrder(Map<String, String> inputData)
+    {
+        CustomMessageDTO responseBody = new CustomMessageDTO();
+        String salesId = inputData.get("salesId");
+        float invoiceAmount = Float.parseFloat(inputData.get("salesAmount"));
+
+        Optional<SalesTable>  salesTableOptional = salesTableRepository.findById(salesId.toString());
+        if (!salesTableOptional.isPresent())
+        {
+            responseBody.setRequestStatus(Enums.RequestStatus.Fail);
+            responseBody.setResponseMessage("Could not find Sales Order");
+            responseBody.setResponseObject(null);
+            return responseBody;
+        }
+        else
+        {
+            SalesTable salesTable = salesTableOptional.get();
+            String resourceUrl = "http://localhost:8082//paymentservice/invoicesalesorder";
+            restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            SalesOrderResponseDTO requestBody = modelMapper.map(salesTable, SalesOrderResponseDTO.class);
+            requestBody.setSalesAmount(invoiceAmount);
+            HttpEntity<SalesOrderResponseDTO> request = new HttpEntity<SalesOrderResponseDTO>(requestBody, headers);
+            String itemPriceResultAsJson = restTemplate.postForObject(resourceUrl, request, String.class);
+
+            JSONObject jsonObj = new JSONObject(itemPriceResultAsJson);
+            String status = "Authorized";
+            if(status.equals(jsonObj.get("Status").toString()))
+            {
+                salesTable.setAmountPaid(salesTable.getAmountPaid() + invoiceAmount);
+                if (salesTable.getAmountPaid() >= salesTable.getTotalPrice())
+                    salesTable.setStatus(Enums.SalesStatus.Invoiced);
+                else
+                    salesTable.setStatus(Enums.SalesStatus.PartiallyInvoice);
+                salesTableRepository.save(salesTable);
+            }
+            responseBody.setRequestStatus(Enums.RequestStatus.Success);
+            responseBody.setResponseMessage("Sales order invoice completed");
+            responseBody.setResponseObject(modelMapper.map(salesTable, SalesOrderResponseDTO.class));
+            return responseBody;
+        }
+    }
     private SalesOrderResponseDTO convertSalesTableEntityToResponseDTO(SalesTable salesTable)
     {
         SalesOrderResponseDTO salesOrderResponseDTO = new SalesOrderResponseDTO();
@@ -127,26 +193,5 @@ public class SalesOrderService
         return SalesLineDTOList;
     }
 
-    private JSONObject getItemDetails(String itemId, String colorId, String sizeId)
-    {
-        String resourceUrl = "http://localhost:8080/item/getdetails";
 
-
-        restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        Map<String, Object> requestBody = new HashMap<String, Object>(3);
-        requestBody.put("itemId", itemId);
-        requestBody.put("colorId", colorId);
-        requestBody.put("sizeId", sizeId);
-
-        HttpEntity<Map<String, Object>> request = new HttpEntity<Map<String, Object>>(requestBody, headers);
-
-
-        String itemPriceResultAsJson = restTemplate.postForObject(resourceUrl, request, String.class);
-
-        JSONObject jsonObj = new JSONObject(itemPriceResultAsJson);
-        return jsonObj;
-    }
 }

@@ -20,7 +20,7 @@ public class ItemController
     public ItemServices itemServices;
 
 
-    @PostMapping(value = "/item/getdetails", produces = "application/json; charset=utf-8")
+    @PostMapping(value = "/inventoryservices/getitemdetails", produces = "application/json; charset=utf-8")
     public ResponseEntity<String> getItemDetails(@RequestBody Map<String, Object> inputData)
     {
         return itemServices.getItemDetails(inputData);
