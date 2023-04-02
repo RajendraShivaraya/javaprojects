@@ -37,7 +37,7 @@ public class SalesOrderService
     @Autowired
     private ModelMapper modelMapper;
 
-    public SalesOrderResponseDTO createSalesOrder(SalesOrderRequestDTO salesOrderRequestDTO)
+    public CustomMessageDTO createSalesOrder(SalesOrderRequestDTO salesOrderRequestDTO)
     {
         SalesOrderResponseDTO salesOrderResponseDTO = new SalesOrderResponseDTO();
         SalesTable salesTable = new SalesTable();
@@ -79,7 +79,21 @@ public class SalesOrderService
         salesTable.setTotalPrice(salesTable.salesAmount - salesTable.salesDiscount);
         salesTableRepository.save(salesTable);
 
-        return convertSalesTableEntityToResponseDTO(salesTableRepository.findById(salesTable.getSalesId()).get());
+        Optional<SalesTable> salesTableOptional = salesTableRepository.findById(salesTable.getSalesId());
+        CustomMessageDTO responseBody = new CustomMessageDTO();
+        if (salesTableOptional.isPresent())
+        {
+            responseBody.setRequestStatus(Enums.RequestStatus.Success);
+            responseBody.setResponseMessage("Sales order created " + salesTable.getSalesId() + " successfully");
+            responseBody.setResponseObject(convertSalesTableEntityToResponseDTO(salesTableOptional.get()));
+        }
+        else
+        {
+            responseBody.setRequestStatus(Enums.RequestStatus.Fail);
+            responseBody.setResponseMessage("Could not create Sales Order");
+            responseBody.setResponseObject(null);
+        }
+        return responseBody;
     }
     private JSONObject getItemDetails(String itemId, String colorId, String sizeId)
     {
