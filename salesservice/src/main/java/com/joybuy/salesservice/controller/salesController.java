@@ -8,6 +8,7 @@ import com.joybuy.salesservice.service.SalesOrderService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,5 +42,11 @@ public class salesController
     public CustomMessageDTO invoiceSalesOrder(@RequestBody Map<String, String> inputData)
     {
         return salesOrderService.invoiceSalesOrder(inputData);
+    }
+
+    @GetMapping("/")
+    public String rootPath()
+    {
+        return "<h1> Welcome to sales services</h1>";
     }
 }
