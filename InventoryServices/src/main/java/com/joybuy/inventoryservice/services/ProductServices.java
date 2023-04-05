@@ -1,14 +1,17 @@
 package com.joybuy.inventoryservice.services;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.joybuy.inventoryservice.DTO.PriceDimensionDTO;
 import com.joybuy.inventoryservice.DTO.ProductPriceDimensionsDTO;
 import com.joybuy.inventoryservice.entities.*;
 import com.joybuy.inventoryservice.repository.IInventDimRepository;
 import com.joybuy.inventoryservice.repository.IProductRepository;
 import com.joybuy.inventoryservice.repository.ISalesPriceRepository;
-import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -77,5 +80,42 @@ public class ProductServices
         {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er.getMessage());
         }
+    }
+
+    public ResponseEntity<String> getItemDetails(Map<String, Object> inputData)
+    {
+        // Deserialize
+
+        Object itemId = inputData.get("itemId");
+        Object colorId = inputData.get("colorId");
+        Object sizeId = inputData.get("sizeId");
+
+        InventDim inventDim = inventDimRepository.findByProductIdAndInventColorIdAndInventSizeId(itemId.toString(), colorId.toString(), sizeId.toString()).get(0);
+        // Serialize
+        JSONObject responseBody = new JSONObject();
+
+        if (inventDim != null)
+        {
+            SalesPrice salesPrice = salesPriceRepository.findById(inventDim.getDimId()).get();
+            if (salesPrice != null)
+            {
+                responseBody.put(SalesPrice.Fields.salesPrice, salesPrice.getSalesPrice());
+                responseBody.put(SalesPrice.Fields.currency, salesPrice.getCurrency());
+                responseBody.put(SalesPrice.Fields.invPrice, salesPrice.getInvPrice());
+                responseBody.put(SalesPrice.Fields.inventDim, salesPrice.getInventDim().getDimId());
+                Optional<Product> optionalProduct = productRepository.findById(inventDim.getProduct().getId());
+                if (optionalProduct.isPresent())
+                {
+                    Product product = optionalProduct.get();
+                    ProductPriceDimensionsDTO prodPriceDTO = new ModelMapper().map(product, ProductPriceDimensionsDTO.class);
+                    responseBody.put("Product", new Gson().toJson(prodPriceDTO));
+                }
+            }
+        }
+        else
+        {
+            responseBody.put("Error", "Could not find item details");
+        }
+        return new ResponseEntity<>(responseBody.toString(), HttpStatus.OK);
     }
 }

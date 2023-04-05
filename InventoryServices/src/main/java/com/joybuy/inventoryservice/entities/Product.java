@@ -29,10 +29,4 @@ public class Product
     private String productLink;
     @Column(name="brand")
     private String brand;
-
-    @OneToMany(mappedBy="product", fetch= FetchType.LAZY,cascade = CascadeType.PERSIST)
-    private List<SalesPrice> salesPrices = new ArrayList<>();
-
-    @OneToMany(mappedBy="product", fetch= FetchType.LAZY,cascade = CascadeType.PERSIST)
-    public List<InventDim> inventDims = new ArrayList<>();
 }

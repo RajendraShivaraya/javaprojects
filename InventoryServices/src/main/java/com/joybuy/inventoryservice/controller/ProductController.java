@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @AllArgsConstructor @NoArgsConstructor
@@ -19,6 +20,11 @@ public class ProductController
     @Autowired
     public ProductServices productService;
 
+    @PostMapping(value = "/getitemdetails", produces = "application/json; charset=utf-8")
+    public ResponseEntity<String> getItemDetails(@RequestBody Map<String, Object> inputData)
+    {
+        return productService.getItemDetails(inputData);
+    }
     @GetMapping("/jsonpayload/{entity}")
     public Object getJsonPayloadOfEntity(@PathVariable String entity)
             throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
@@ -47,11 +53,6 @@ public class ProductController
                 "  <li>Create product by service : /inventoryservice/create/product </li>\n" +
                 "</ul>";
     }
-    @GetMapping("/products/{id}")
-    public Product getProducts(@PathVariable String id)
-    {
-        return productService.productRepository.findById(id).get();
-    }
 
     @GetMapping("/products")
     public List<Product> getProducts()
@@ -59,13 +60,19 @@ public class ProductController
         return productService.getProducts();
     }
 
-    @PostMapping("/newProduct")
+    @GetMapping("/products/{id}")
+    public Product getProducts(@PathVariable String id)
+    {
+        return productService.productRepository.findById(id).get();
+    }
+
+    @PostMapping("/createproduct")
     public Product createProduct(@RequestBody Product product)
     {
         return productService.productRepository.save(product);
     }
 
-    @PostMapping("/inventoryservice/create/product")
+    @PostMapping("/createproductdimprice")
     public ResponseEntity<String> createProduct(@RequestBody ProductPriceDimensionsDTO product)
     {
         return productService.createProduct(product);
