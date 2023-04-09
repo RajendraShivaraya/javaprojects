@@ -18,13 +18,13 @@ services:
       - "3306:3306" # this is port numbers used by mysql image
     volumes:
       - type: volume #this is the data volume which gets created while building the docker compose
-        source: joybuydata_volume
+        source: custom_volume
         target: /var/lib/mysql
         volume:
           nocopy: true
       - type: volume
-        source: joybuydata_volume
-        target: /var/log/mysql
+        source: custom_volume
+        target: /var/log/mysql # Log data
         volume:
           nocopy: true
     networks:
@@ -34,11 +34,11 @@ services:
     container_name: jb_invserv_container
     ports:
       - "8080:8090"
-    build:
-      context:  ./inventoryservice # path to the Dockerfile for the custom app
+    build: # path to the Dockerfile for the custom app
+      context:  ./inventoryservice
       dockerfile: Dockerfile
-    volumes:
-      - type: bind # mount the app's source code into the container
+    volumes: # mount the app's source code into the container
+      - type: bind
         source: ./inventoryservice
         target: /app
     depends_on:
@@ -48,9 +48,49 @@ services:
     env_file:
       - .env
 
+  jb_salesserv:
+    container_name: jb_salesserv_container
+    ports:
+      - "8081:8091"
+    build: # path to the Dockerfile for the custom app
+      context: ./salesservice
+      dockerfile: Dockerfile
+    volumes: # mount the app's source code into the container
+      - type: bind
+        source: ./salesservice
+        target: /app
+    depends_on:
+      - joybuy_mysql_database # make sure the databases service is started first
+      - jb_invserv # make sure the inventory service is started first
+    networks:
+      - custom_network
+    env_file:
+      - .env
+
+  jb_paymserv:
+    container_name: jb_paymserv_container
+    ports:
+      - "8082:8092"
+    build: # path to the Dockerfile for the custom app
+      context: ./paymentservice
+      dockerfile: Dockerfile
+    volumes: # mount the app's source code into the container
+      - type: bind
+        source: ./paymentservice
+        target: /app
+    depends_on:
+      - joybuy_mysql_database # make sure the databases service is started first
+      - jb_invserv # make sure the inventory service is started first
+      - jb_salesserv # make sure the inventory service is started first
+    networks:
+      - custom_network
+    env_file:
+      - .env
+
 #used to define named volumes and networks that can be shared by multiple services
 volumes:
-  joybuydata_volume:
+  custom_volume:
+    name: jb_data
 networks:
   custom_network:
     name: jb_network
