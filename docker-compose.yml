@@ -1,0 +1,56 @@
+version: "3.9" #Docker compose version number, it can vary based new version available.
+services:
+  joybuy_webservers:
+    container_name: jb_webserver_container
+    image: nginx:latest
+    ports:
+    - "80:80"
+
+  joybuy_mysql_database:
+    container_name: jb_mysql_container
+    image: mysql:latest
+    environment:
+      MYSQL_USER: rajendra
+      MYSQL_PASSWORD: 1234
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: joybuy
+    ports:
+      - "3306:3306" # this is port numbers used by mysql image
+    volumes:
+      - type: volume #this is the data volume which gets created while building the docker compose
+        source: joybuydata_volume
+        target: /var/lib/mysql
+        volume:
+          nocopy: true
+      - type: volume
+        source: joybuydata_volume
+        target: /var/log/mysql
+        volume:
+          nocopy: true
+    networks:
+      - custom_network #this is the network volume which gets created while building the docker compose
+
+  jb_invserv:
+    container_name: jb_invserv_container
+    ports:
+      - "8080:8090"
+    build:
+      context:  ./inventoryservice # path to the Dockerfile for the custom app
+      dockerfile: Dockerfile
+    volumes:
+      - type: bind # mount the app's source code into the container
+        source: ./inventoryservice
+        target: /app
+    depends_on:
+      - joybuy_mysql_database # make sure the databases service is started first
+    networks:
+      - custom_network
+    env_file:
+      - .env
+
+#used to define named volumes and networks that can be shared by multiple services
+volumes:
+  joybuydata_volume:
+networks:
+  custom_network:
+    name: jb_network
