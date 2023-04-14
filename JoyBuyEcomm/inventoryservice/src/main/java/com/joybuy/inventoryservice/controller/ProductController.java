@@ -20,6 +20,12 @@ public class ProductController
     @Autowired
     public ProductServices productService;
 
+    @GetMapping("/")
+    public String rootPath()
+    {
+        return "<h1> Welcome to inventory services</h1>";
+    }
+
     @PostMapping(value = "/getitemdetails", produces = "application/json; charset=utf-8")
     public ResponseEntity<String> getItemDetails(@RequestBody Map<String, Object> inputData)
     {
@@ -41,18 +47,7 @@ public class ProductController
         }
     }
 
-    @GetMapping("/")
-    public String rootPath()
-    {
-        return "<h1> Welcome to inventory services</h1>" +
-                "<ul>\n" +
-                "  <li>JSON Payload of entities : http://localhost:8090/jsonpayload/{entity} </li>\n" +
-                "  <li>Get product by id : /products/{id} </li>\n" +
-                "  <li>Get all products : /products </li>\n" +
-                "  <li>Create new product by entity : /newProduct </li>\n" +
-                "  <li>Create product by service : /inventoryservice/create/product </li>\n" +
-                "</ul>";
-    }
+
 
     @GetMapping("/products")
     public List<Product> getProducts()
