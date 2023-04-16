@@ -1,8 +1,8 @@
 {
   "type": "service_account",
   "project_id": "rajendrashivaraya-learning",
-  "private_key_id": "a142993b6bc37f56eb8f537b9b22854e26156717",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCflajNef5VxAae\nxz9Y7hiDWNt+mDcmjKtO/8b3JnA8quFXYDs+zMmDqqzaihfi9NQW2z4N+fzZGxhA\nRpyDQPet6U3BHyFTJS2zehuJIfgkYiUQ0jLiJSl1tiiSMRAGWaE7twM9E2NJbUuH\nSZbAd/3urFCSVIILbHVveXwrAbWmh4Jj7jKzBbxfsGzng0JRQnUj9IgeLMd5p1+F\nc+oVNHCqBKDzFyY9iZSrpg9bm3SarK9oxL1K0+izJUJzxsynXWNAPlXeBVgjGZhP\nvpnx0wZs5TF1k07/t72f5pu4MTSERGn+f3GSaT7o94ZXHajpD0rDqljbb9qPrvGg\nz2gT5BnPAgMBAAECggEADAJYrMx95xlfKtVb/zFntywEKd+C4vaaBlIO4ywe18nq\nNvI/HceOcJydm7029UrZp7YBp6PviFesIwYior6hr5I2L47L/171tKMUmGTDMNsR\nPACoI0bgUFiQGV7yJvAuxyN2GG4G6OXTKw/5dWwc4rhP6zsgetiYxnXyHKW+dD9x\naqynR2SaIPMaCC5eOKdtEOG9lHuIIVk77Mvctxs/eVPCS1K5UoTmgUGx0BLdS8Ow\n4yp3jI4fgQ01ndo/8Ims4yudfsdAFm5sBrMbgwWBmygnVCO4lyu8OPQgS2WoIuPW\nfHEyzGSwUfEcMZoXSIxbJeRwegzxouZZeQDvOPThTQKBgQDgTAyQZuML3EBTovvu\n87r2bgqtqyK8EnX3V1zZhuugPVd6WJ5gsD9UjqIhZZVrPwXhCMY8Lc6XH7BWfbwl\nsSeOmXs0qgGh2NT4EpYhkR5eA4a47FVDKQE3c8P4zt5iRW7wndNQStH7MK1uLa2k\n4pzGweCqA/ba9l/zni5i0N0WDQKBgQC2JA8JzruVGn6bnEiiiDUAk4arG00CG/OC\nmXapI9mC40pmF0P5WhAanEzHQjKSStwxp+TTKTOVJpYrI19ijMD9iWZPaBLktBTU\nbzUbf+SClqCwQJ72lpBrtzQtS8t/CPa1ytKZMLV7JFAbz3MRIh/KY7lziaZdXGMR\n32E9gDQ0SwKBgQC7yxCN6obYjE0TeZeDxm9YGmQ4advIKZC5SV0FB7DKVfGjDwVz\noL01d8KJQbsrsvWiJy2KfzPEVhTXJajcygl7nEeKnXiGYLxXA4DNk+of/sXSmJT+\niRtqqTOAYvvQvZ+YOBwP0sUikevzHq2PKujmhLcsweryA2vs1hiyRXuGFQKBgG9J\nqvKYIR8iWBdmLy83wALBIPhtLulKAMhcUhdYcy85Bx1Hu92gPNS1iWf6N4IRQWcJ\nqZOnyf+o2voym7ZQQB7pk9ySv3CD43JFHJLX2tw7gqUOZtJN/qICB1xhwk21QWCk\nM3csPsal0libsTfXvMrhkc9ZXJAQweuKrBRyv/LvAoGAHRy2TMwg+ifh9B0McP1y\nEdQ6853XLQc+Nu3DNoJOIoXh6bKGiS+RVJM8xARgLsQgMK0zee8TPoBnHnQCzoyC\npB5puCluiT5qlpbySh+S4T/mhcrjzCFiCi8OvyAf7Zp2hte4xWW7SgmuIX0wKAsK\nBXToOqOlzoZFFuZlWvz2awA=\n-----END PRIVATE KEY-----\n",
+  "private_key_id": "",
+  "private_key": "",
   "client_email": "rajendrashivaraya@rajendrashivaraya-learning.iam.gserviceaccount.com",
   "client_id": "109819320130365644209",
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
