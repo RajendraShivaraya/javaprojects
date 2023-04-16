@@ -7,13 +7,21 @@ import products_mongodb.service.ProductServices;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.ui.Model;
 
 @RestController
 public class ProductController
 {
     @Autowired
     ProductServices productServices;
+
+    private static final Logger logger = LogManager.getLogger(ProductController.class);
+    private List<Integer> num = Arrays.asList(1, 2, 3, 4, 5);
 
     @GetMapping("/")
     public String home()
@@ -43,5 +51,19 @@ public class ProductController
     public ResponseEntity<List<Products>> getProduct()
     {
         return productServices.getProducts();
+    }
+
+    @GetMapping("/logs")
+    public String logPage()
+    {
+        // pre-java 8
+        if (logger.isDebugEnabled()) {
+            logger.debug("Hello from Log4j 2 - num : {}", num);
+        }
+
+        // java 8 lambda, no need to check log level
+        logger.debug("Hello from Log4j 2 - num : {}", () -> num);
+
+        return "welcome"; //view
     }
 }
