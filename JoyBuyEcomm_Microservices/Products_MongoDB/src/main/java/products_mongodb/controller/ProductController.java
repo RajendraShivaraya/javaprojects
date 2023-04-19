@@ -61,8 +61,10 @@ public class ProductController
             logger.debug("Hello from Log4j 2 - num : {}", num);
         }
 
-        // java 8 lambda, no need to check log level
-        logger.debug("Hello from Log4j 2 - num : {}", () -> num);
+        logger.debug("Hello from Log4j2 debug - num : {}", () -> num);
+        logger.info( "Hello from Log4j2 info  - num : {}", () -> num);
+        logger.error("Hello from Log4j2 error - num : {}", () -> num);
+        logger.fatal("Hello from Log4j2 fatal - num : {}", () -> num);
 
         return "welcome"; //view
     }
