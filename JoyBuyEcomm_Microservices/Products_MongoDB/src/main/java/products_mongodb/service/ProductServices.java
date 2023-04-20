@@ -29,20 +29,18 @@ public class ProductServices
     ProductRepository productRepository;
     @Autowired
     private SaveImageToGCP saveImageToGCP;
+    @Autowired
+    private SaveImageToAWS saveImageToAWS;
 
     public String createProduct(Products product) throws IOException
     {
-        product.setGcpImageURL(saveImageToGCP.uploadImage(product.imageURL, product.id));
+        product.setCloudImageURL(saveImageToGCP.uploadImage(product.imageURL, product.id));
         productRepository.save(product);
         return "Product " + product.id + "create successfully";
     }
 
-    public String bulkCreateProduct()
+    public String bulkCreateProduct(String cloudProvider)
     {
-        //String message = saveImageToGCP.getMyBeanMessage();
-        //return message;
-
-        //File file = new File("C:\\Products.xlsx");   //creating a new file instance
         File file = new File(new File("./data/AmazonProducts1000.xlsx").getAbsolutePath());
 
         Products prodObj = null;
@@ -101,7 +99,10 @@ public class ProductServices
                 prodObj.setSku(row.getCell(22).getStringCellValue());
                 prodObj.setStock(row.getCell(23).getBooleanCellValue());
                 prodObj.setAvailableQty((int) row.getCell(24).getNumericCellValue());
-                prodObj.setGcpImageURL(saveImageToGCP.uploadImage(prodObj.imageURL, prodObj.id));
+                if (cloudProvider == "GCP")
+                    prodObj.setCloudImageURL(saveImageToGCP.uploadImage(prodObj.imageURL, prodObj.id));
+                else
+                    prodObj.setCloudImageURL(saveImageToAWS.uploadImage(prodObj.imageURL, prodObj.id));
 
                 productRepository.save(prodObj);
             }

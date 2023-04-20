@@ -30,10 +30,10 @@ public class Products
     public String modelNumber;
     @Field("product_sku")
     public String sku;
+    @Field("product_cloudImageURL")
+    public String cloudImageURL;
     @Field("product_imageURL")
     public String imageURL;
-    @Field("product_gcpimageURL")
-    public String gcpImageURL;
     @Field("product_stock")
     public boolean stock;
     @Field("product_availableQty")

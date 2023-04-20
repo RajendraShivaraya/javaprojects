@@ -1,5 +1,4 @@
 package products_mongodb.util;
-
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
@@ -12,16 +11,19 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 import products_mongodb.exception.GCPFileUploadException;
 import products_mongodb.exception.InvalidFileTypeException;
 
 import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 
 @Component
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DataBucketUtil
+public class GCPDataBucketUtil
 {
     @Value("${gcp.config.file}")
     private String gcpConfigFile;
@@ -80,4 +82,16 @@ public class DataBucketUtil
         throw new InvalidFileTypeException("Not a permitted file type");
     }
 
+    public File downloadFile(String fileUrl) throws IOException
+    {
+        URL url = new URL(fileUrl);
+        URLConnection connection = url.openConnection();
+        InputStream inputStream = connection.getInputStream();
+        File tempFile = File.createTempFile("temp", null); // Create a temporary file to store the downloaded content
+        try (FileOutputStream fileOutputStream = new FileOutputStream(tempFile)) {
+            StreamUtils.copy(inputStream, fileOutputStream);
+        }
+        inputStream.close();
+        return tempFile; // Wrap the temporary file in a custom implementation of MultipartFile
+    }
 }

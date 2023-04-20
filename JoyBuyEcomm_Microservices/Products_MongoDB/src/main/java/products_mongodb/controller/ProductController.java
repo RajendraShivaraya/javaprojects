@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.ui.Model;
+import products_mongodb.service.SaveImageToAWS;
 
 @RestController
 public class ProductController
@@ -35,10 +35,10 @@ public class ProductController
         return productServices.createProduct(product);
     }
 
-    @PostMapping("/product/bulkcreateproduct")
-    public String createProduct()
+    @PostMapping("/product/bulkcreateproduct/{cloudProvider}")
+    public String createProduct(@PathVariable String cloudProvider)
     {
-        return productServices.bulkCreateProduct();
+        return productServices.bulkCreateProduct(cloudProvider);
     }
 
     @GetMapping("/product/{productid}")
@@ -67,5 +67,13 @@ public class ProductController
         logger.fatal("Hello from Log4j2 fatal - num : {}", () -> num);
 
         return "welcome"; //view
+    }
+
+    @Autowired
+    SaveImageToAWS saveImageToAWS;
+    @GetMapping("/aws")
+    public void awsOps() throws IOException
+    {
+        saveImageToAWS.uploadImage("", "");
     }
 }
