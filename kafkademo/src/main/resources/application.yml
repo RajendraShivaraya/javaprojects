@@ -1,0 +1,16 @@
+
+server:
+  port: 8080
+spring:
+  kafka:
+    consumer:
+      group-id: group-1
+      auto-offset-reset: earliest
+      bootstrap-servers: localhost:9092
+  data:
+    mongodb:
+      uri: mongodb+sybuyecomm.hcbhqu6.mongodb.net/joybuyecomm?retryWrites=true&w=majority
+      authentication-database: admin
+      ssl:
+        enabled: true
+        invalid-certificate-allowed: false
