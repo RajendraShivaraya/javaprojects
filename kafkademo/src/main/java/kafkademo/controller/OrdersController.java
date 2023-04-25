@@ -67,13 +67,27 @@ public class OrdersController
             return responseManager.buildAPIException(ex.getMessage());
         }
     }
-
     @GetMapping("/custorders/{CustId}")
     public ResponseModel getOrderByCustomerId(@PathVariable String CustId)
     {
         try
         {
             Object object = orderManager.getOrdersByCustomerId(CustId, 10);
+            return responseManager.buildAPIResponse("Executed Successfully", object);
+        }
+        catch (Exception ex)
+        {
+            return responseManager.buildAPIException(ex.getMessage());
+        }
+    }
+
+    @PostMapping("/kafka/sendorder/{orderid}")
+    public ResponseModel sendOrderToKafka(@PathVariable String orderid)
+    {
+        try
+        {
+            orderManager.sendKafkaMessage(orderid);
+            Object object = "Order " + orderid + " sent to Kafka";
             return responseManager.buildAPIResponse("Executed Successfully", object);
         }
         catch (Exception ex)

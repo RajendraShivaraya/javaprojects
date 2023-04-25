@@ -1,4 +1,4 @@
-package kafkademo.service;
+package kafkademo.service.interfaces;
 
 import kafkademo.model.JoybuyEnums;
 import kafkademo.model.Orders;

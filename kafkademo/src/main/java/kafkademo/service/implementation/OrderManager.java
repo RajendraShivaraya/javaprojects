@@ -3,7 +3,8 @@ package kafkademo.service.implementation;
 import kafkademo.model.JoybuyEnums;
 import kafkademo.model.Orders;
 import kafkademo.repository.OrderRepository;
-import kafkademo.service.IOrderManagerService;
+import kafkademo.service.KafkaProducer;
+import kafkademo.service.interfaces.IOrderManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -22,6 +23,8 @@ public class OrderManager implements IOrderManagerService
     OrderRepository orderRepository;
     @Autowired
     private MongoTemplate mongoTemplate;
+    @Autowired
+    KafkaProducer kafkaProducer;
 
     @Override
     @Transactional
@@ -29,16 +32,19 @@ public class OrderManager implements IOrderManagerService
     {
         try
         {
-            Orders newOrders = orderRepository.save(orders);
-            // Publish order to kafka
-            return newOrders.orderId;
+            Orders newOrder = orderRepository.save(orders);
+            return newOrder.orderId;
         }
         catch (Exception ex)
         {
             return ex.getMessage();
         }
     }
-
+    public void sendKafkaMessage(String orderId)
+    {
+        // Publish order to kafka
+        kafkaProducer.send(getOrderById(orderId));
+    }
     @Override
     public JoybuyEnums.OrderStatus getOrderStatus(String orderId)
     {
