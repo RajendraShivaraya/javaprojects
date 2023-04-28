@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class SaveFilesToAWS
 {
-    String accessKey = "AKIAVSGOY4HUSXAPLNPH";
-    String secretKey = "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";
+    String accessKey = "test";
+    String secretKey = "test";
     String bucketName = "americaregion";
     String excelFolderPath = "./excelfiles";
     String zipFolderPath = "./zipfiles";
