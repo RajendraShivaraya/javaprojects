@@ -2,21 +2,22 @@ package security;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 @SpringBootApplication
 public class SecurityApplication {
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         SpringApplication.run(SecurityApplication.class, args);
     }
 
     @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder)
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception
     {
-        return builder.build();
+        return http.getSharedObject(AuthenticationManagerBuilder.class).build();
     }
-
 }
