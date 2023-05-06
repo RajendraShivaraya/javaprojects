@@ -12,18 +12,6 @@ public class UserController
     @Autowired
     UserService userService;
 
-    @GetMapping("/")
-    public String getHome()
-    {
-        return "<h1>Welcome home</h1>";
-    }
-
-    @PostMapping("/signup/")
-    public boolean createUser(@RequestBody Users user)
-    {
-        return userService.createUser(user);
-    }
-
     @GetMapping("/user/")
     public List<Users> getUsers()
     {
@@ -35,9 +23,4 @@ public class UserController
         return userService.getUserById(id);
     }
 
-    @GetMapping("/admin/")
-    public String adminHome()
-    {
-        return "<h1>Welcome Admin</h1>";
-    }
 }

@@ -2,6 +2,7 @@ package security.customsecurity;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -41,6 +42,7 @@ public class SecurityConfiguration
         return new BCryptPasswordEncoder();
     }
 
+    /*
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity rajHttpSecurity) throws Exception
     {
@@ -53,6 +55,22 @@ public class SecurityConfiguration
 
         return rajHttpSecurity.build();
     }
+    */
+    @Bean
+    SecurityFilterChain allEndPointsSecurityFilterChain(HttpSecurity rajHttpSecurity) throws Exception
+    {
+        rajHttpSecurity.csrf().disable()
+                .authorizeHttpRequests()
+                .requestMatchers("/").permitAll()
+                .requestMatchers("/signup/").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/user/**").hasRole("USER")
+                .anyRequest()
+                .authenticated()
+                .and().formLogin()
+                .and().httpBasic();
 
+        return rajHttpSecurity.build();
+    }
 
 }
