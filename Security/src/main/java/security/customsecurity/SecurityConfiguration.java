@@ -56,6 +56,7 @@ public class SecurityConfiguration
         return rajHttpSecurity.build();
     }
     */
+
     @Bean
     SecurityFilterChain allEndPointsSecurityFilterChain(HttpSecurity rajHttpSecurity) throws Exception
     {
@@ -67,8 +68,8 @@ public class SecurityConfiguration
                 .requestMatchers("/user/**").hasRole("USER")
                 .anyRequest()
                 .authenticated()
-                .and().formLogin()
-                .and().httpBasic();
+                .and().formLogin() // This will pop in build login form for login
+                .and().httpBasic(); // Browser pop-up for login instead of inbuilt form login. We can use this in postman and other tools.
 
         return rajHttpSecurity.build();
     }
