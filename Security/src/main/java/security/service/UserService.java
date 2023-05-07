@@ -1,8 +1,10 @@
 package security.service;
 
+import security.datamodel.Roles;
 import security.datamodel.Users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import security.repository.RolesRepository;
 import security.repository.UserRepository;
 
 import java.util.List;
@@ -13,11 +15,15 @@ public class UserService
 {
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    RolesRepository rolesRepository;
 
     public boolean createUser(Users user)
     {
         try
         {
+            Roles userRole = rolesRepository.findByName(user.getUserRole());
+            user.addRole(userRole);
             userRepository.save(user);
             return true;
         }

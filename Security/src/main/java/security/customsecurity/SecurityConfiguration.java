@@ -1,25 +1,32 @@
 package security.customsecurity;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.security.cert.Extension;
+import javax.sql.DataSource;
+
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration
 {
+    /*
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
         UserDetails raj = User.withUsername("raj")
@@ -36,10 +43,11 @@ public class SecurityConfiguration
                 .build();
         return new InMemoryUserDetailsManager(raj, aks, admin);
     }
+    */
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return NoOpPasswordEncoder.getInstance();
     }
 
     /*
@@ -62,10 +70,10 @@ public class SecurityConfiguration
     {
         rajHttpSecurity.csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/").permitAll()
-                .requestMatchers("/signup/").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/user/**").hasRole("USER")
+                .requestMatchers("/").permitAll()
+                .requestMatchers("/signup/").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and().formLogin() // This will pop in build login form for login
@@ -74,4 +82,14 @@ public class SecurityConfiguration
         return rajHttpSecurity.build();
     }
 
+    @Autowired
+    MyUserDetailService myUserDetailService;
+    @Bean
+    public AuthenticationManager authManager(HttpSecurity http) throws Exception
+    {
+        AuthenticationManagerBuilder authenticationManagerBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.userDetailsService(myUserDetailService);
+        return authenticationManagerBuilder.build();
+    }
 }

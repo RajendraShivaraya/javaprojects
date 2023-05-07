@@ -1,14 +1,14 @@
 package security.datamodel;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Time;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
@@ -33,6 +33,22 @@ public class Users
     private Date   dob;
     @Column(name = "createddate")
     private Date   accCreationDate;
+
     @Column(name = "createdtime")
     private Time   accCreationTime;
+
+    @Column(name = "userrole")
+    private String userRole;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+
+    private Set<Roles> roles = new HashSet<>();
+    public void addRole(Roles role) {
+        this.roles.add(role);
+    }
 }
