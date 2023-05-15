@@ -54,4 +54,10 @@ public class InventoryController
     {
         return new ResponseEntity<>(inventService.findByItemCategoryAndItemSubCategory(categoryDTO), HttpStatus.OK);
     }
+
+    @PutMapping("/items/updateqty/{itemid}")
+    public ResponseEntity<InventTable> updateItem(@PathVariable String itemid)
+    {
+        return new ResponseEntity<>(inventService.updateItemQty(itemid), HttpStatus.OK);
+    }
 }

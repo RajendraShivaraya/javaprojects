@@ -1,17 +1,16 @@
 package sessionmanagementredis.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.annotation.*;
 import org.springframework.stereotype.Service;
 import sessionmanagementredis.model.AllEnums;
 import sessionmanagementredis.model.InventTable;
 import sessionmanagementredis.model.InventTableRepository;
 import sessionmanagementredis.model.ItemCategoryDTO;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @CacheConfig(cacheNames = {"Inventory"})
@@ -27,7 +26,7 @@ public class InventService
                 .forEach(item -> inventTableRepository.save(item));
         return "All the items inserted successfully";
     }
-    @Cacheable(key = "")
+    @Cacheable(key = "'AllItems'")
     public List<InventTable> findAll()
     {return inventTableRepository.findAll();}
 
@@ -35,9 +34,9 @@ public class InventService
     public List<InventTable> findByItemCategory(AllEnums.ItemCategory category)
     {return inventTableRepository.findByItemCategory(category);}
 
-    @Cacheable(key = "#p0")
-    public List<InventTable> findByItemSubCategory(AllEnums.ItemSubCategory subCategory)
-    {return inventTableRepository.findByItemSubCategory(subCategory);}
+    @Cacheable(key = "#subcategory")
+    public List<InventTable> findByItemSubCategory(AllEnums.ItemSubCategory subcategory)
+    {return inventTableRepository.findByItemSubCategory(subcategory);}
 
     @Cacheable(key = "#qty")
     public List<InventTable> findByQtyGreaterThanEqual(Integer qty)
@@ -50,4 +49,23 @@ public class InventService
     public List<InventTable> findByItemCategoryAndItemSubCategory(ItemCategoryDTO categoryDTO)
     {return inventTableRepository.findByItemCategoryAndItemSubCategory(categoryDTO.getCategory(), categoryDTO.getSubCategory());}
 
+    @CachePut(key = "#itemid")
+    public InventTable updateItemQty(String itemid)
+    {
+        try
+        {
+            Optional<InventTable> optionalInventTable= inventTableRepository.findById(itemid);
+            if (optionalInventTable.isPresent())
+            {
+                InventTable inventTable = optionalInventTable.get();
+                inventTable.setQty(inventTable.getQty()-1);
+                return inventTableRepository.save(inventTable);
+            }
+            else
+                return null;
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
 }
