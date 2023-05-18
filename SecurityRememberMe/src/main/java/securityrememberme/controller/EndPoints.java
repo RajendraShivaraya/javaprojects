@@ -1,5 +1,8 @@
 package securityrememberme.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +17,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.net.http.HttpRequest;
+
+import static org.springframework.web.util.WebUtils.getCookie;
 
 @RestController
 public class EndPoints
@@ -107,5 +112,52 @@ public class EndPoints
         {
             throw new RuntimeException(e);
         }
+    }
+
+    @GetMapping("/set-cookie")
+    public String setCookie(HttpServletResponse response)
+    {
+        // Create a new cookie
+        Cookie cookie = new Cookie("RajendraCookie", "TestofcookiesItshouldIncludeSpace");
+
+        // Set additional properties for the cookie
+        cookie.setMaxAge(3600); // Set the maximum age of the cookie in seconds (1 hour in this example)
+        cookie.setPath("/"); // Set the path for which the cookie is valid ("/" means the entire application)
+        cookie.setSecure(true); // Set whether the cookie should only be transmitted over secure (HTTPS) connections
+
+        // Add the cookie to the response
+        response.addCookie(cookie);
+
+        return "Cookie has been set.";
+    }
+
+    @GetMapping("/read-cookie")
+    public String userProfile(HttpServletRequest request)
+    {
+        // Retrieve the viewedArticles cookie
+        Cookie cookieObject = getCookie(request, "RajendraCookie");
+        if (cookieObject != null)
+        {
+            String viewedArticleIds = cookieObject.getValue();
+            return viewedArticleIds;
+        }
+        return "Unable to read cookie";
+    }
+
+    @GetMapping("/set-cookie/page1")
+    public String setCookieForInnerEndPoint(HttpServletResponse response)
+    {
+        // Create a new cookie
+        Cookie cookie = new Cookie("RajendraCookie_InnerPage", "TestofcookiesItshouldIncludeSpace");
+
+        // Set additional properties for the cookie
+        cookie.setMaxAge(3600); // Set the maximum age of the cookie in seconds (1 hour in this example)
+        cookie.setPath("/read-cookie"); // Set the path for which the cookie is valid ("/" means the entire application)
+        cookie.setSecure(true); // Set whether the cookie should only be transmitted over secure (HTTPS) connections
+
+        // Add the cookie to the response
+        response.addCookie(cookie);
+
+        return "Cookie has been set.";
     }
 }
