@@ -3,28 +3,37 @@ package sessionmanagement.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import sessionmanagement.model.LoginRequest;
 import sessionmanagement.model.TestUserRepository;
 import sessionmanagement.model.TestUsers;
+import org.springframework.security.authentication.AuthenticationManager;
 
 @RestController
+@CrossOrigin
 public class SessionController
 {
 
     @Autowired
     TestUserRepository testUserRepository;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-    @PostMapping("/signup/")
+    @PostMapping("/signup")
     public String createUser(@RequestBody TestUsers user)
     {
         try
@@ -36,6 +45,32 @@ public class SessionController
         {
             return "User account creation failed " +e.getMessage();
         }
+    }
+
+    @PostMapping("/signin")
+    public ResponseEntity<String> authenticateUser(@RequestBody LoginRequest loginDto, HttpServletRequest request, HttpServletResponse response)
+    {
+        // read cookies
+        Cookie[] cookiesFromBrowser = request.getCookies();
+        // Auth
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                loginDto.getUsername(), loginDto.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        String sessionId = attributes.getRequest().getSession().getId();
+
+        // Set the session ID as a cookie
+        Cookie sessionCookie = new Cookie("JSESSIONID", sessionId);
+        sessionCookie.setPath("/");
+        sessionCookie.setHttpOnly(false);
+        sessionCookie.setSecure(true);
+        response.addCookie(sessionCookie);
+        response.setHeader("Access-Control-Expose-Headers", "Set-Cookie");
+        response.setHeader("Access-Control-Allow-Credentials", "true"); // Add this line
+
+        return new ResponseEntity<>("User signed-in successfully!.", HttpStatus.OK);
     }
 
     @GetMapping("/")
